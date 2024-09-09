@@ -5,6 +5,7 @@ const Room = require('./db/models/rooms');
 
 const categories = ['standart', 'luxury', 'apartments'];
 
+
 const makeNewRegion = async (name) => {
     try {
         const region = (await Region.create({
@@ -39,6 +40,57 @@ const makeNewHotel = async (name, regionId) => {
     } catch (e) {
         console.error(e)
         return null
+    }
+}
+
+const deleteHotelById = async (hotelId) => {
+    try {
+        const hotel = await Hotel.findOne({
+            where: {
+                id: hotelId
+            }
+        })
+
+        if (hotel === null) {
+            console.error('Отель с таким ID не найден.')
+            return null;
+        }
+        await Hotel.destroy({
+            where: {
+                id: hotelId
+            }
+        })
+
+        return true
+    } catch (e) {
+        console.error(e)
+        return null
+    }
+}
+
+const editHotelById = async (hotelId, name, region) => {
+    try {
+        const hotel = await Hotel.findOne({
+            where: {
+                id: hotelId
+            }
+        })
+
+        if (hotel === null) {
+            console.error('Отель с таким ID не найден.')
+            return null;
+        }
+        
+        await Hotel.update(
+            { name: name, region: region },
+            {
+              where: {
+                id: hotelId,
+              },
+            },
+          );
+    } catch (e) {
+        console.error(e)
     }
 }
 
@@ -131,5 +183,7 @@ const drop = async () => {
         return null
     }
 }
+
+
 module.exports = {makeNewRegion, makeNewHotel, makeNewRoom, bookRoom, getFreeRoomsInHotel, drop}
 //     await sequelize.sync({ force: true })
